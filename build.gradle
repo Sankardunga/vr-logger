@@ -3,6 +3,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'release'
+apply plugin: 'sonar-runner'
 
 sourceCompatibility = 1.7
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -78,5 +79,21 @@ uploadArchives {
 				password vivaRealRepoPassword
 		    }
 		}
+    }
+}
+
+sonarRunner {
+    // Browse results at: https://ci.vivareal.com/sonar (goes through Apache reverse proxy)
+    // Use 10.0.12.57:9000 in the script
+    // because EC2 instances can connect to each other without restrictions.
+    sonarProperties {
+	property "sonar.projectName", "VivaReal Logger"
+	property "sonar.projectDescription", "VivaReal Logger"
+	property "test.ignoreFailures", "true"
+	property "sonar.host.url", sonarUrl
+	property "sonar.jdbc.url", sonarJdbcUrl
+	property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+	property "sonar.jdbc.username", sonarJdbcUsername
+	property "sonar.jdbc.password", sonarJdbcPassword
     }
 }
