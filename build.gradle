@@ -1,0 +1,82 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'release'
+
+sourceCompatibility = 1.7
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenLocal()
+    maven {
+		url "https://jenkins.vivareal.com/nexus/content/groups/public"
+		credentials {
+		    username vivaRealRepoUsername
+			password vivaRealRepoPassword
+		}
+    }
+    mavenCentral()
+}
+
+eclipse {
+    classpath {
+		downloadSources = true
+		downloadJavadoc = true
+    }
+}
+
+idea {
+}
+
+group = 'com.vivareal'
+
+jar {
+    manifest {
+	attributes 'Implementation-Title': 'VivaReal Logger', 'Implementation-Version': version
+    }
+}
+
+configurations.all {
+    exclude group: 'com.sun.jdmk', module: 'jmxtools'
+    exclude group: 'com.sun.jmx', module: 'jmxri'
+}
+
+dependencies {
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "2.4.0"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.3.3"
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: "3.3.2"
+    compile group: 'log4j', name: 'log4j', version: '1.2.15'
+}
+
+
+buildscript {
+    repositories {
+		mavenCentral()
+		mavenLocal()
+		maven {
+		    url "https://jenkins.vivareal.com/nexus/content/groups/public"
+		    credentials {
+			username vivaRealRepoUsername
+			password vivaRealRepoPassword
+		    }
+		}
+    }
+	dependencies {
+		classpath 'com.github.townsfolk:gradle-release:1.2'
+	}
+}
+
+createReleaseTag.dependsOn uploadArchives
+
+uploadArchives {
+    repositories {
+        maven {
+			url "https://jenkins.vivareal.com/nexus/content/groups/public"
+		    credentials {
+				username vivaRealRepoUsername
+				password vivaRealRepoPassword
+		    }
+		}
+    }
+}
