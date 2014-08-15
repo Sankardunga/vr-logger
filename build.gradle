@@ -83,9 +83,6 @@ uploadArchives {
 }
 
 sonarRunner {
-    // Browse results at: https://ci.vivareal.com/sonar (goes through Apache reverse proxy)
-    // Use 10.0.12.57:9000 in the script
-    // because EC2 instances can connect to each other without restrictions.
     sonarProperties {
 	property "sonar.projectName", "VivaReal Logger"
 	property "sonar.projectDescription", "VivaReal Logger"
