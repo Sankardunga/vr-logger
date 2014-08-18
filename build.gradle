@@ -2,7 +2,6 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
-apply plugin: 'release'
 apply plugin: 'sonar-runner'
 
 sourceCompatibility = 1.7
@@ -50,37 +49,6 @@ dependencies {
     compile group: 'log4j', name: 'log4j', version: '1.2.15'
 }
 
-
-buildscript {
-    repositories {
-		mavenCentral()
-		mavenLocal()
-		maven {
-		    url "https://jenkins.vivareal.com/nexus/content/groups/public"
-		    credentials {
-			username vivaRealRepoUsername
-			password vivaRealRepoPassword
-		    }
-		}
-    }
-	dependencies {
-		classpath 'com.github.townsfolk:gradle-release:1.2'
-	}
-}
-
-createReleaseTag.dependsOn uploadArchives
-
-uploadArchives {
-    repositories {
-        maven {
-			url "https://jenkins.vivareal.com/nexus/content/groups/public"
-		    credentials {
-				username vivaRealRepoUsername
-				password vivaRealRepoPassword
-		    }
-		}
-    }
-}
 
 sonarRunner {
     sonarProperties {
