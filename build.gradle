@@ -73,7 +73,7 @@ createReleaseTag.dependsOn uploadArchives
 uploadArchives {
     repositories {
         maven {
-			url "https://jenkins.vivareal.com/nexus/content/groups/public"
+			url "https://jenkins.vivareal.com/nexus/content/repositories/releases/"
 		    credentials {
 				username vivaRealRepoUsername
 				password vivaRealRepoPassword
