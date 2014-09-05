@@ -58,7 +58,7 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
     /**
      * The default buffer size is set to 128 events.
      */
-    public static final int DEFAULT_BUFFER_SIZE = 2;
+    public static final int DEFAULT_BUFFER_SIZE = 128;
 
     /**
      * Event buffer, also used as monitor to protect itself and discardMap from
