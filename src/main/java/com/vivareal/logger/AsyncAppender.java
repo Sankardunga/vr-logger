@@ -27,9 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -92,13 +94,18 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
     /**
      * Should location info be included in dispatched messages.
      */
-    private boolean locationInfo = false;
+    private boolean locationInfo = true;
 
     /**
      * Does appender block when buffer is full.
      * This will always be false, because we are ASYNC
      */
     private boolean blocking = false;
+    
+    /**
+     * The application environment. e.g. test, qa, production
+     */
+    private String environment;
 
     /**
      * Create new instance.
@@ -146,6 +153,9 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
 	event.getNDC();
 	event.getThreadName();
 	event.getMDCCopy();
+	if(StringUtils.isNotBlank(environment)) {
+	    MDC.put("environment", environment);
+	}
 	if (locationInfo) {
 	    event.getLocationInformation();
 	}
@@ -264,6 +274,14 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
      */
     public boolean getLocationInfo() {
 	return locationInfo;
+    }
+    
+    public String getEnvironment() {
+	return environment;
+    }
+    
+    public void setEnvironment(String environment) {
+	this.environment = environment;
     }
 
     /**
