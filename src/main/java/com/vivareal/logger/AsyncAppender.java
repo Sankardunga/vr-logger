@@ -92,7 +92,7 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
     /**
      * Should location info be included in dispatched messages.
      */
-    private boolean locationInfo = false;
+    private boolean locationInfo = true;
 
     /**
      * Does appender block when buffer is full.
