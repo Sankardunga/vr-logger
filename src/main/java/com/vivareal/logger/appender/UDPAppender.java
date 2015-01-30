@@ -1,4 +1,4 @@
-package com.vivareal.logger;
+package com.vivareal.logger.appender;
 
 /*
  * ============================================================================
@@ -66,6 +66,7 @@ import org.apache.log4j.net.SocketAppender;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vivareal.logger.LogstashEvent;
 
 /**
  * 

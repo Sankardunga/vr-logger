@@ -1,4 +1,4 @@
-package com.vivareal.logger;
+package com.vivareal.logger.appender;
 
 import java.io.BufferedWriter;
 import java.io.File;
