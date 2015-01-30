@@ -17,7 +17,7 @@
 
 // Contibutors:  Aaron Greenhouse <aarong@cs.cmu.edu>
 //               Thomas Tuft Muller <ttm@online.no>
-package com.vivareal.logger;
+package com.vivareal.logger.appender;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
