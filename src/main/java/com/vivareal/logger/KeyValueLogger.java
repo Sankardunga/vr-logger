@@ -12,18 +12,30 @@ import org.apache.log4j.Priority;
 
 public class KeyValueLogger implements Logger {
 
-    private static final String SEPARATOR = "%**%";
+    private static final String DEFAULT_SEPARATOR = "%**%";
     private final org.apache.log4j.Logger logger;
+    private String separator;
 
 
     private KeyValueLogger(org.apache.log4j.Logger logger) {
 	this.logger = logger;
     }
+    
+    private KeyValueLogger(org.apache.log4j.Logger logger, String separator) {
+	this.logger = logger;
+	this.separator = null;
+	this.separator = separator;
+    }    
 
     public static KeyValueLogger getLogger(Class<?> clazz) {
-      return new KeyValueLogger(org.apache.log4j.Logger.getLogger(clazz));
+	return new KeyValueLogger(org.apache.log4j.Logger.getLogger(clazz));
     }
 
+    public static KeyValueLogger getLogger(Class<?> clazz, String separator) {
+	return new KeyValueLogger(org.apache.log4j.Logger.getLogger(clazz), separator);
+    }    
+    
+    
     @Override
     public void log(Priority priority, String message, Object... data) {
 	logger.log(priority, getMessage(message, data));
@@ -98,7 +110,7 @@ public class KeyValueLogger implements Logger {
 	StringBuffer buffer = new StringBuffer();
 	buffer.append(" ");
 	buffer.append(key.toString());
-	buffer.append(SEPARATOR);
+	buffer.append(this.separator != null ? this.separator : DEFAULT_SEPARATOR);
 	buffer.append(value.toString());
 	buffer.append(" ");
 	return buffer.toString();
