@@ -12,7 +12,7 @@ import org.apache.log4j.Priority;
 
 public class KeyValueLogger implements Logger {
 
-    private static final String DEFAULT_SEPARATOR = "%**%";
+    private static final String DEFAULT_SEPARATOR = "=";
     private final org.apache.log4j.Logger logger;
     private String separator;
 
