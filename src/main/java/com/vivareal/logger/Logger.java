@@ -1,11 +1,11 @@
 package com.vivareal.logger;
 
-import org.apache.log4j.Priority;
+public interface Logger extends BaseLogger {
 
-public interface Logger {
+    LogDataBuilder with(String key);
+    
+    LogDataConjunction withObject(Object object);
+    
+    LogDataConjunction withObject(Object object, String prefix);
 
-    void log(Priority priority, String message, Object... data);
-    
-    void log(Priority priority, String message, Throwable t, Object... data);
-    
 }

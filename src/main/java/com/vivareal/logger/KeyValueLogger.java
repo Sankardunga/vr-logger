@@ -1,6 +1,7 @@
 package com.vivareal.logger;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,22 +9,22 @@ import java.util.Set;
 
 import net.vidageek.mirror.dsl.Mirror;
 
-import org.apache.log4j.Priority;
-
-public class KeyValueLogger implements Logger {
+public class KeyValueLogger extends AbstractLogger implements Logger, LogDataBuilder, LogDataConjunction {
 
     private static final String DEFAULT_SEPARATOR = "=";
-    private final org.apache.log4j.Logger logger;
     private String separator;
-
+    
+    private static ThreadLocal<Map<String, String>> keyValueMap;
+    private static ThreadLocal<Map<String, Object>> objects;
+    private static ThreadLocal<String> currentKey;
 
     private KeyValueLogger(org.apache.log4j.Logger logger) {
-	this.logger = logger;
+	super(logger);
+	this.separator = DEFAULT_SEPARATOR;
     }
     
     private KeyValueLogger(org.apache.log4j.Logger logger, String separator) {
-	this.logger = logger;
-	this.separator = null;
+	this(logger);
 	this.separator = separator;
     }    
 
@@ -36,42 +37,125 @@ public class KeyValueLogger implements Logger {
     }    
     
     
+    
     @Override
-    public void log(Priority priority, String message, Object... data) {
-	logger.log(priority, getMessage(message, data));
+    public LogDataBuilder with(String key) {
+	if (currentKey == null) {
+	    currentKey = new ThreadLocal<String>();
+	}
+	currentKey.set(key);
+	
+	return this;
     }
 
     @Override
-    public void log(Priority priority, String message, Throwable t, Object... data) {
-	logger.log(priority, getMessage(message, data), t);
+    public LogDataConjunction withObject(Object object) {
+	String qualifiedName = object.getClass().getName();
+	String prefix = qualifiedName.substring(qualifiedName.lastIndexOf(".")+1);
+	
+	return this.withObject(object, prefix.replaceFirst(new Character(prefix.charAt(0)).toString(), 
+		new Character(prefix.charAt(0)).toString().toLowerCase()));
+    }
+    
+    @Override
+    public LogDataConjunction withObject(Object object, String prefix) {
+	if (objects == null) {
+	    objects = new ThreadLocal<Map<String, Object>>();
+	    objects.set(new HashMap<String, Object>());
+	}
+	objects.get().put(prefix, object);
+	return this;
     }    
     
-    private String getMessage(String message, Object... data) {
-	if (data == null || data.length == 0)
+    @Override
+    public LogDataConjunction value(Object value) {
+	if (keyValueMap == null) {
+	    keyValueMap = new ThreadLocal<Map<String,String>>();
+	    keyValueMap.set(new HashMap<String, String>());
+	}
+	keyValueMap.get().put(currentKey.get(), value.toString());
+	return this;
+    }
+
+    @Override
+    public LogDataBuilder and(String key) {
+	return this.with(key);
+    }
+
+    @Override
+    public LogDataConjunction andObject(Object object) {
+	return this.withObject(object);
+    }
+
+    @Override
+    public LogDataConjunction andObject(Object object, String prefix) {
+	return this.withObject(object, prefix);
+    }    
+    
+    protected String getFullMessage(String message) {
+	if (!hasSerializableData())
 	    return message;
 	
-	return message.trim() + " " + serialize(data);
+	StringBuffer buffer = new StringBuffer(message.trim());
+	
+	
+	if (hasSerializableObjects()) {
+	    buffer.append(" ");
+	    buffer.append(serialize(objects.get()));
+	    objects.get().clear();
+	}
+	
+	if (hasSerializableMap()) {
+	    buffer.append(" ");
+	    buffer.append(serializeMap(keyValueMap.get()));
+	    keyValueMap.get().clear();
+	}
+	
+	buffer.append(" ");
+	buffer.append(getLogLevelAttribute());	
+	
+	System.out.println(buffer);
+	return buffer.toString();
+    }
+
+    private String getLogLevelAttribute() {
+	return "logLevel" + this.separator + this.level.toString();
+    }
+
+    private boolean hasSerializableData() {
+	return hasSerializableMap() || hasSerializableObjects();
+    }
+
+    private boolean hasSerializableObjects() {
+	return objects != null && objects.get().size() > 0;
+    }
+
+    private boolean hasSerializableMap() {
+	return keyValueMap != null && keyValueMap.get().size() > 0;
     }
 
     @SuppressWarnings("rawtypes")
-    private String serialize(Object... data) {
+    private String serialize(Map<String, Object> objects) {
 	StringBuffer buffer = new StringBuffer();
 
-	if (data != null && data.length > 0) {
-	    for (Object object : data) {
-		if (object instanceof Map) {
-		    buffer.append(this.serializeMap((Map) object));
+	if (objects != null && objects.size() > 0) {
+	    for (Entry<String, Object> entry : objects.entrySet()) {
+		if (entry.getValue() instanceof Map) {
+		    buffer.append(this.serializeMap((Map) entry.getValue()));
 		} else {
-		    buffer.append(this.serializeObject(object));
+		    buffer.append(this.serializeObject(entry));
 		}
 	    }
 	}
 	return buffer.toString();
     }
 
-    private Object serializeObject(Object object) {
+    private String serializeObject(Entry<String, Object> entry) {
 	
 	StringBuffer buffer = new StringBuffer();
+
+	Object object = entry.getValue();
+	String prefix = entry.getKey();
 	
 	Mirror mirror = new Mirror();
 	
@@ -81,7 +165,7 @@ public class KeyValueLogger implements Logger {
 	    for (Field field : fields) {
 		Object value = mirror.on(object).get().field(field.getName());
 		if (value != null) {
-		    buffer.append(formatKeyValue(field.getName(), value.toString()));
+		    buffer.append(formatKeyValue(prefix + "." + field.getName(), value.toString()));
 		}
 	    }
 	}
@@ -110,10 +194,10 @@ public class KeyValueLogger implements Logger {
 	StringBuffer buffer = new StringBuffer();
 	buffer.append(" ");
 	buffer.append(key.toString());
-	buffer.append(this.separator != null ? this.separator : DEFAULT_SEPARATOR);
+	buffer.append(this.separator);
 	buffer.append(value.toString());
 	buffer.append(" ");
 	return buffer.toString();
     }
-    
+
 }
