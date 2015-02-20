@@ -1,13 +1,14 @@
 package com.vivareal.logger;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public abstract class AbstractLogger implements BaseLogger {
 
-    protected final org.apache.log4j.Logger logger;
+    protected final Logger logger;
     protected Level level;
     
-    protected AbstractLogger(org.apache.log4j.Logger logger) {
+    protected AbstractLogger(Logger logger) {
 	this.logger = logger;
     }
 
@@ -70,7 +71,18 @@ public abstract class AbstractLogger implements BaseLogger {
 	level = Level.DEBUG;
 	this.logger.debug(getFullMessage(message), t);
     }
-    
-    protected abstract String getFullMessage(String message);
 
+    @Override
+    public void trace(String message) {
+	level = Level.TRACE;
+	this.logger.trace(message);
+    }
+
+    @Override
+    public void trace(String message, Throwable t) {
+	level = Level.TRACE;
+	this.logger.trace(message, t);
+    }
+
+    protected abstract String getFullMessage(String message);
 }

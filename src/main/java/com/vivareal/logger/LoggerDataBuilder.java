@@ -1,6 +1,6 @@
 package com.vivareal.logger;
 
-public interface LogDataBuilder {
+public interface LoggerDataBuilder {
 
     LogDataConjunction value(Object object);
     

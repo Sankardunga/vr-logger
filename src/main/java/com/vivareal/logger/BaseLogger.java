@@ -1,7 +1,7 @@
 package com.vivareal.logger;
 
 public interface BaseLogger {
-
+    
     void error(String message);
     void error(String message, Throwable t);
     
@@ -16,5 +16,8 @@ public interface BaseLogger {
     
     void debug(String message);
     void debug(String message, Throwable t);
+    
+    void trace(String message);
+    void trace(String message, Throwable t);    
     
 }
