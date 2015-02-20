@@ -44,9 +44,6 @@ public class KeyValueLogger extends AbstractLogger implements Logger {
     @Override
     protected String getFullMessage(String message) {
 	String fullMessage = message.trim() + " logLevel" + this.separator + level.toString();
-	
-	System.out.println("Olar! " + fullMessage);
-	
 	return fullMessage;
     }
 }
