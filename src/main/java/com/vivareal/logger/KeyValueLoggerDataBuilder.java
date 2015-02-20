@@ -89,8 +89,6 @@ public class KeyValueLoggerDataBuilder extends AbstractLogger implements LoggerD
 	
 	builder.append(" ");
 	builder.append(getLogLevelAttribute());	
-	
-	System.out.println(builder);
 	return builder.toString();
     }
 
