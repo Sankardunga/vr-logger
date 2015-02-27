@@ -103,6 +103,11 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
     private boolean blocking = false;
     
     /**
+     * The application . e.g. applicationA, applicationB
+     */
+    private String application;
+    
+    /**
      * The application environment. e.g. test, qa, production
      */
     private String environment;
@@ -153,6 +158,9 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
 	event.getNDC();
 	event.getThreadName();
 	event.getMDCCopy();
+	if(StringUtils.isNotBlank(application)) {
+		MDC.put("application", application);
+	}
 	if(StringUtils.isNotBlank(environment)) {
 	    MDC.put("environment", environment);
 	}
@@ -275,6 +283,14 @@ public class AsyncAppender extends AppenderSkeleton implements AppenderAttachabl
     public boolean getLocationInfo() {
 	return locationInfo;
     }
+    
+	public void setApplication(String application) {
+		this.application = application;
+	}
+	
+	public String getApplication() {
+		return application;
+	}
     
     public String getEnvironment() {
 	return environment;
