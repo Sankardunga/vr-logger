@@ -42,13 +42,14 @@ public class KeyValueLoggerDataBuilder extends AbstractLogger implements LoggerD
     
     @Override
     public LogDataConjunction value(Object value) {
-	keyValueMap.put(currentKey, value.toString());
+	keyValueMap.put(currentKey, (value != null ? value : "null").toString());
 	currentKey = null;
 	return this;
     }
 
     @Override
     public LoggerDataBuilder and(String key) {
+	if (key == null || key.isEmpty()) throw new IllegalArgumentException("Keys cannot be null nor empty strings!");
 	this.currentKey = key;
 	return this;
     }
