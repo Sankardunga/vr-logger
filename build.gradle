@@ -30,8 +30,6 @@ eclipse {
 idea {
 }
 
-group = 'com.vivareal'
-
 jar {
     manifest {
 	attributes 'Implementation-Title': 'VivaReal Logger', 'Implementation-Version': version
